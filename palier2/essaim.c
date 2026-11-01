@@ -150,13 +150,14 @@ int main(int argc, char *argv[])
         printf("drone %2d décolle (pid %d)\n", i + 1, pids[i]);
     }
 
-    /* ✍ 3 À vous : int rappel_fait = 0; ici, avant la boucle.
-       ✍ 4 À vous : wait dort tant qu'aucun drone ne s'arrête ; pendant ce temps, personne
+    int rappel_fait = 0;             /* 1 : le rappel est parti (✍ 3) ; la relève s'arrête */
+
+    /* ✍ 4 À vous : wait dort tant qu'aucun drone ne s'arrête ; pendant ce temps, personne
        ne regarde rappel_demande. Remplacer cette boucle par while (en_vol > 0), avec
        int en_vol = n; avant :
          - p = waitpid(-1, &etat, WNOHANG) : 0 si personne ne s'est arrêté ;
            alors usleep(100 * 1000), et continue ;
-         - un drone s'est arrêté : en_vol--. */
+         - un drone s'est arrêté : en_vol-- ; un drone repart (la relève) : en_vol++. */
     int etat;
     pid_t p;
     while ((p = wait(&etat)) > 0) {
@@ -176,10 +177,13 @@ int main(int argc, char *argv[])
            le signal : "💀 drone  3 abattu (signal 9)". Sinon, la ligne ci-dessous. */
         printf("   drone %2d : %s\n", numero, raison(WEXITSTATUS(etat)));
 
-        /* ✍ 5 À vous : posé à la base (WIFEXITED, et le code vaut POSE), hors rappel
-           (!rappel_fait) : un drone neuf, sous le même numéro.
-           pids[numero - 1] = lancer_drone(numero); en_vol++ ; et il le dit :
-           "   drone  2 : relève, repart de la base (pid 4242)". */
+        /* Donné : la relève. Posé à la base (WIFEXITED, et le code vaut POSE), hors rappel :
+           un drone neuf part de la base, sous le même numéro. */
+        if (WIFEXITED(etat) && WEXITSTATUS(etat) == POSE && !rappel_fait) {
+            pids[numero - 1] = lancer_drone(numero);
+            printf("   drone %2d : relève, repart de la base (pid %d)\n",
+                   numero, pids[numero - 1]);
+        }
     }
 
     printf("Essaim : tout le monde est au sol.\n");

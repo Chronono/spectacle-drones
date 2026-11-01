@@ -29,16 +29,18 @@ static void sur_sigterm(int sig)
     rappele = 1;                     /* on lève un drapeau, la boucle fera le reste */
 }
 
-/* Appelle la tour. Rend la socket, ou -1 si personne ne répond.
-   ✍ 1 À vous, sur le modèle d'ouvrir_serveur, dans tour.c :
-     - int s = socket(AF_INET, SOCK_STREAM, 0);
-     - l'adresse de la tour : une struct sockaddr_in mise à 0, sa famille (AF_INET),
-       son port (htons(PORT_TOUR)), sa machine (htonl(INADDR_LOOPBACK) : 127.0.0.1) ;
-     - connect au lieu de bind et listen : s'il rend moins de 0, personne ne
-       décroche, return -1 ; sinon, return s. */
+/* Donné : appelle la tour. Rend la socket, ou -1 si personne ne répond.
+   Une prise (socket), l'adresse de la tour (127.0.0.1, PORT_TOUR), puis connect. */
 static int se_connecter(void)
 {
-    return -1;
+    int s = socket(AF_INET, SOCK_STREAM, 0);         /* une prise, pour TCP sur IPv4 */
+    struct sockaddr_in tour = { 0 };                  /* tous les champs à 0 */
+    tour.sin_family = AF_INET;                        /* IPv4 */
+    tour.sin_port = htons(PORT_TOUR);                 /* octets dans l'ordre du réseau */
+    tour.sin_addr.s_addr = htonl(INADDR_LOOPBACK);    /* 127.0.0.1 : cette machine */
+    if (connect(s, (struct sockaddr *)&tour, sizeof tour) < 0)
+        return -1;                                    /* personne au bout du fil */
+    return s;
 }
 
 /* Un pas vers (cible_x, cible_y), en diagonale si besoin. Rend 1 s'il a bougé. */
@@ -76,14 +78,14 @@ static void voler(int numero, int cible_x, int cible_y)
             retour = 1;
 
         /* dire à la tour où on est, et si on rentre
-           ✍ 2 À vous : une ligne dans la socket, à chaque pas, avec dprintf : un printf
+           ✍ 1 À vous : une ligne dans la socket, à chaque pas, avec dprintf : un printf
            qui écrit dans s. "POS 3 12 5 80\n" (numéro, x, y, batterie), ou
            "RENTRE 3 12 5 80\n" s'il rentre (retour vaut 1). Le format : commun.h. */
 
         /* choisir où aller */
         if (retour) {
             if (x == BASE_X && y == BASE_Y) {
-                /* ✍ 4 À vous : dire "POSE\n" à la tour, par dprintf. */
+                /* ✍ 3 À vous : dire "POSE\n" à la tour, par dprintf. */
                 exit(POSE);
             }
             cible_x = BASE_X;
@@ -99,7 +101,7 @@ static void voler(int numero, int cible_x, int cible_y)
         usleep(TICK_MS * 1000);
     }
 
-    /* ✍ 4 À vous : dire "CHUTE\n" à la tour, par dprintf. */
+    /* ✍ 3 À vous : dire "CHUTE\n" à la tour, par dprintf. */
     exit(A_PLAT);                    /* exit ferme aussi la socket */
 }
 

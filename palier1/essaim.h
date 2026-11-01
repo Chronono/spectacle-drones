@@ -8,7 +8,7 @@
 #define HAUTEUR          12
 #define BASE_X   (LARGEUR - 1) /* la base, en bas à droite */
 #define BASE_Y   (HAUTEUR - 1)
-#define TICK_MS         400    /* un pas toutes les 400 ms */
+#define TICK_MS         40     /* un pas toutes les 40 ms ; 400 pour le voir voler pas à pas */
 #define MARGE_RETOUR      3    /* un drone rentre quand il n'a plus que de quoi
                                   rejoindre la base, plus 3 % (1 % par case) */
 

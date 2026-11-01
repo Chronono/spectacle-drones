@@ -37,9 +37,11 @@ Les `✍ À vous` du code disent quoi écrire. Les avertissements de `make` au d
 
 Un deuxième terminal : le **+** en haut à droite du panneau des terminaux.
 
+Un drone fait un pas toutes les 40 ms (`TICK_MS`, dans `essaim.h` puis `commun.h`) : un vol dure de quelques secondes à une demi-minute. Pour le regarder voler pas à pas, mettez 400, puis `make`.
+
 ## Séance 9
 
-Les paliers 4 à 6 arriveront dans ce dépôt. Dans votre Codespace, un terminal à la racine :
+Les paliers 4 et 5 arriveront dans ce dépôt. Dans votre Codespace, un terminal à la racine :
 
 ```bash
 git pull

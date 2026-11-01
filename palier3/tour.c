@@ -40,19 +40,22 @@ int main(void)
     }
 
     ouvrir_radar();
+    dessiner(NULL, NULL, 0, 0);      /* un ciel vide, en attendant le premier appel */
     while (1) {                      /* jusqu'au Ctrl+C, qui tue la tour */
-        /* ✍ 3 À vous, à la place des deux lignes ci-dessous :
-             - int s = accept(serveur, NULL, NULL); attend qu'un drone appelle, et rend
-               une socket neuve, rien que pour lui parler ;
-             - le drone : Drone d = { 0 }; puis d.cible = -1; (pas de point) ;
-             - char ligne[64]; et, tant que lire_ligne(s, ligne, sizeof ligne) rend plus de 0 :
-               si sscanf(ligne, "POS %d %d %d %d", ...) rend 4 (dans &d.numero, &d.x, &d.y,
-               &d.batterie) : d.au_retour = 0 ; si "RENTRE %d %d %d %d" rend 4 : d.au_retour = 1 ;
-               puis dessiner(&d, NULL, 0, 0) : un drone seul, pas de figure.
-           ✍ 4 À vous : une autre ligne (POSE, CHUTE) : noter(d.numero, ligne), au journal.
-           ✍ 5 À vous : lire_ligne a rendu 0, il a raccroché : noter(d.numero, "a raccroché"),
+        /* Donné : décrocher. accept dort jusqu'à ce qu'un drone appelle, et rend une
+           socket neuve, rien que pour lui parler ; serveur reste au standard. */
+        int s = accept(serveur, NULL, NULL);
+
+        Drone d = { 0 };             /* un seul drone, rangé sur la pile */
+        d.cible = -1;                /* pas de point de figure aujourd'hui */
+        char ligne[64];
+
+        /* ✍ 2 À vous : écouter ce drone. Tant que lire_ligne(s, ligne, sizeof ligne) rend
+           plus de 0 : si sscanf(ligne, "POS %d %d %d %d", ...) rend 4 (dans &d.numero, &d.x,
+           &d.y, &d.batterie) : d.au_retour = 0 ; si "RENTRE %d %d %d %d" rend 4 :
+           d.au_retour = 1 ; puis dessiner(&d, NULL, 0, 0) : un drone seul, pas de figure.
+           ✍ 3 À vous : une autre ligne (POSE, CHUTE) : noter(d.numero, ligne), au journal.
+           ✍ 4 À vous : lire_ligne a rendu 0, il a raccroché : noter(d.numero, "a raccroché"),
            close(s), puis dessiner(NULL, NULL, 0, 0) : un ciel vide. */
-        dessiner(NULL, NULL, 0, 0);
-        sleep(1);
     }
 }
