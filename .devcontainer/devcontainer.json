@@ -1,0 +1,10 @@
+{
+  "name": "C embarqué ECE : le spectacle de drones",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-debian-12",
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": ["seccomp=unconfined"],
+  "customizations": {
+    "vscode": { "extensions": ["ms-vscode.cpptools"] },
+    "codespaces": { "openFiles": ["README.md"] }
+  }
+}
