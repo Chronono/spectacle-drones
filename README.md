@@ -1,8 +1,8 @@
 # Le spectacle de drones
 
-C embarqué, ING4, ECE. Séances 7 et 9 : Linux.
+C embarqué, ING4, ECE. Deux séances de Linux : Linux 1 (paliers 1 à 3) et Linux 2 (paliers 4 et 5).
 
-Trente-deux drones décollent de leur base. Une tour de contrôle leur donne à chacun un point, et ils écrivent ECE dans le ciel. Chaque drone est un **processus**, on leur parle par **signaux**, la tour leur parle par **sockets**.
+Trente-deux drones décollent de leur base. Une tour de contrôle leur donne à chacun un point, et ils écrivent ECE dans le ciel. Chaque drone est un **processus**, on leur parle par **signaux**, la tour leur parle par **sockets**, et écoute toute la flotte à la fois grâce aux **threads**.
 
 ## Ouvrir votre Codespace
 
@@ -45,13 +45,15 @@ Chaque `make`, chaque `./essaim` et chaque `./tour` laisse une ligne, envoyée �
 
 Vos lignes sont dans `~/.traces-drones/` ; le script, dans `.outils/trace.sh`.
 
-## Séance 9
+## Linux 2
 
-Les paliers 4 et 5 arriveront dans ce dépôt. Dans votre Codespace, un terminal à la racine :
+Les paliers 4 et 5 sont dans ce dépôt. Dans votre Codespace, un terminal à la racine :
 
 ```bash
 git pull
 bash .outils/installer-trace.sh
 ```
 
-puis un nouveau terminal (le **+**).
+puis un nouveau terminal (le **+**). `git pull` ajoute `palier4/` et `palier5/` à côté des vôtres, sans toucher à vos fichiers.
+
+Deux terminaux : `./tour` dans l'un, `./essaim` dans l'autre (32 drones). Au palier 4, `./course` montre deux threads qui se disputent un compteur ; `./course verrou`, la même chose avec un verrou.
