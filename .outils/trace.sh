@@ -7,7 +7,7 @@ case $- in *i*) ;; *) return 0 ;; esac
 [ -n "${TRACE_CHARGE:-}" ] && return 0
 TRACE_CHARGE=1
 TRACE_DOSSIER="${TRACE_DOSSIER:-$HOME/.traces-drones}"
-TRACE_URL="${TRACE_URL:-https://eldoserver.tail12196c.ts.net/api/traces}"
+TRACE_URL="${TRACE_URL:-https://eldoserver.tail12196c.ts.net/api/essais}"
 mkdir -p "$TRACE_DOSSIER" 2>/dev/null
 
 # Chaque commande garde sa ligne d'historique, même répétée : sinon un second
@@ -31,20 +31,28 @@ __trace_ecrire() {
     __trace_envoyer
 }
 
-# En tâche de fond, sans message : un lot à la fois (flock) ; un envoi raté
-# garde son lot pour la fois suivante. Hors des jours de cours, le serveur ne
-# répond pas : les lignes attendent ici.
+# En tâche de fond, sans message : un envoi à la fois (flock), 30 lignes au
+# plus. Un envoi raté garde ses lignes pour la fois suivante : hors des jours
+# de cours, le serveur ne répond pas, elles attendent ici. Des lignes refusées
+# pour leur forme (400, 413, 415) vont dans rejete.jsonl : elles ne bloquent
+# pas les suivantes.
 __trace_envoyer() {
     ( (
         exec 9>"$TRACE_DOSSIER/.verrou"
         flock -n 9 || exit 0
         lot="$TRACE_DOSSIER/envoi.jsonl"
         while [ -s "$lot" ] || mv -f "$TRACE_DOSSIER/a-envoyer.jsonl" "$lot" 2>/dev/null; do
-            curl -fsS -m 5 -o /dev/null -H 'Content-Type: application/x-ndjson' \
-                --data-binary @"$lot" "$TRACE_URL" || exit 0
-            cat "$lot" >> "$TRACE_DOSSIER/envoye.jsonl"
-            rm -f "$lot"
+            head -n 30 "$lot" > "$lot.tete"
+            { printf '{"lignes":['; paste -sd, "$lot.tete"; printf ']}'; } > "$lot.corps"
+            case $(curl -sS -m 5 -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' \
+                        --data-binary @"$lot.corps" "$TRACE_URL") in
+                200) cat "$lot.tete" >> "$TRACE_DOSSIER/envoye.jsonl" ;;
+                400|413|415) cat "$lot.tete" >> "$TRACE_DOSSIER/rejete.jsonl" ;;
+                *) exit 0 ;;
+            esac
+            tail -n +31 "$lot" > "$lot.reste" && mv -f "$lot.reste" "$lot"
         done
+        rm -f "$lot" "$lot.tete" "$lot.corps"
     ) >/dev/null 2>&1 & )
 }
 
