@@ -39,10 +39,19 @@ Un deuxième terminal : le **+** en haut à droite du panneau des terminaux.
 
 Un drone fait un pas toutes les 40 ms (`TICK_MS`, dans `essaim.h` puis `commun.h`) : un vol dure de quelques secondes à une demi-minute. Pour le regarder voler pas à pas, mettez 400, puis `make`.
 
+## Ce que voit votre prof
+
+Chaque `make`, chaque `./essaim` et chaque `./tour` laisse une ligne, envoyée à votre prof : votre pseudo GitHub, l'heure, le dossier, la commande, si elle a réussi (ou le signal qui l'a arrêtée), sa durée, et pour `make` le nombre d'erreurs et d'avertissements, avec la première erreur. Pas votre code, ni le reste du terminal. C'est pour voir où ça coince.
+
+Vos lignes sont dans `~/.traces-drones/` ; le script, dans `.outils/trace.sh`.
+
 ## Séance 9
 
 Les paliers 4 et 5 arriveront dans ce dépôt. Dans votre Codespace, un terminal à la racine :
 
 ```bash
 git pull
+bash .outils/installer-trace.sh
 ```
+
+puis un nouveau terminal (le **+**).

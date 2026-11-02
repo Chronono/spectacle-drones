@@ -3,6 +3,7 @@
   "image": "mcr.microsoft.com/devcontainers/cpp:1-debian-12",
   "capAdd": ["SYS_PTRACE"],
   "securityOpt": ["seccomp=unconfined"],
+  "postCreateCommand": "bash .outils/installer-trace.sh",
   "customizations": {
     "vscode": { "extensions": ["ms-vscode.cpptools"] },
     "codespaces": { "openFiles": ["README.md"] }
