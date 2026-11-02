@@ -56,4 +56,4 @@ bash .outils/installer-trace.sh
 
 puis un nouveau terminal (le **+**). `git pull` ajoute `palier4/` et `palier5/` à côté des vôtres, sans toucher à vos fichiers.
 
-Deux terminaux : `./tour` dans l'un, `./essaim` dans l'autre (32 drones). Au palier 4, `./course` montre deux threads qui se disputent un compteur ; `./course verrou`, la même chose avec un verrou.
+Deux terminaux : `./tour` dans l'un, `./essaim` dans l'autre (32 drones).
